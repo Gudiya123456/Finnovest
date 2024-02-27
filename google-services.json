@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "563796085333",
+    "project_id": "finnovest-43e2f",
+    "storage_bucket": "finnovest-43e2f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:563796085333:android:5a01a1170bc818594a62dc",
+        "android_client_info": {
+          "package_name": "www.finnovestresearch.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDK6TlHKSACkFXObH0FTuuTK5FpFkWZelw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
