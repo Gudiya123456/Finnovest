@@ -7,22 +7,24 @@ import {
   BackHandler,
   ScrollView,
   ActivityIndicator,
+  Keyboard,
 } from "react-native";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-
+import { FONTS, COLORS, SIZES } from "../../constants";
 import axios from "axios";
 import { HomeScreen } from "../HomeScreen";
 import { Feather } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { perfectSize } from "../../constants/theme";
+import { StatusBar } from "expo-status-bar";
 
 export default function LoginScreen({ navigation }) {
   const [isLogedIn, setIsLogedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErros] = useState({});
   const [defaultParams] = useState({
-    phone: "9656676466",
+    phone: "",
   });
 
   const [params, setParams] = useState(
@@ -35,17 +37,17 @@ export default function LoginScreen({ navigation }) {
   };
   const [exitApp, setExitApp] = useState(0);
 
-  const backAction = () => {
-    setTimeout(() => {
-      setExitApp(0);
-    }, 2000);
-    if (exitApp === 0) {
-      setExitApp(exitApp + 1);
-    } else if (exitApp === 1) {
-      BackHandler.exitApp();
-    }
-    return true;
-  };
+  // const backAction = () => {
+  //   setTimeout(() => {
+  //     setExitApp(0);
+  //   }, 2000);
+  //   if (exitApp === 0) {
+  //     setExitApp(exitApp + 1);
+  //   } else if (exitApp === 1) {
+  //     BackHandler.exitApp();
+  //   }
+  //   return true;
+  // };
 
   useEffect(() => {
     checkLogedIn();
@@ -55,17 +57,17 @@ export default function LoginScreen({ navigation }) {
     }, 10000);
   }, []);
 
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-    return () =>
-      BackHandler.removeEventListener(
-        "hardwareBackPress",
-        backHandler.remove()
-      );
-  });
+  // useEffect(() => {
+  //   const backHandler = BackHandler.addEventListener(
+  //     "hardwareBackPress",
+  //     backAction
+  //   );
+  //   return () =>
+  //     BackHandler.removeEventListener(
+  //       "hardwareBackPress",
+  //       backHandler.remove()
+  //     );
+  // });
 
   const checkLogedIn = async () => {
     try {
@@ -105,25 +107,34 @@ export default function LoginScreen({ navigation }) {
     const phone = params.phone;
     try {
       const response = await axios.get(
-        "https://app-console.finocrm.in/api/v2/check-number/" + phone
+        "https://finocrm.in/api/check-number/" + phone
       );
-      if (!response.data.status) {
+      console.log();
+      if (response.data.status == "error") {
         setIsLoading(false);
         setErros({ ...errors, phone: response.data.message });
       }
-      if (response.data.status) {
+      if (response.data.status == "success") {
         setIsLoading(false);
         navigation.push("otp", { phone });
       }
     } catch (error) {
       setIsLoading(false);
+      alert("Failed with server Error try after sometime!");
     }
   };
-
+  useEffect(() => {
+    if (params.phone.length == 10) {
+      Keyboard.dismiss();
+      getOtpFromServer();
+    }
+  }, [params]);
   return isLogedIn ? (
     <HomeScreen />
   ) : (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      <StatusBar style="dark" />
+
       <SafeAreaView style={{ flex: 1, padding: perfectSize(15) }}>
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -154,6 +165,19 @@ export default function LoginScreen({ navigation }) {
                   maxLength={10}
                 />
               </View>
+              {errors.phone && (
+                <View style={{ marginLeft: perfectSize(3) }}>
+                  <Text
+                    style={{
+                      ...FONTS.body5,
+                      color: errors.phone ? COLORS.error : COLORS.primary,
+                    }}
+                  >
+                    {errors.phone && errors.phone}
+                  </Text>
+                </View>
+              )}
+
               <View>
                 <TouchableOpacity
                   style={styles.button}
@@ -170,7 +194,7 @@ export default function LoginScreen({ navigation }) {
                       </Text>
                     </View>
                   ) : (
-                    <Text style={[styles.content, { color: "white" }]}>
+                    <Text style={[styles.content, { color: "white" , backgroundColor:'navi' }]}>
                       Request OTP
                     </Text>
                   )}
@@ -210,7 +234,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     // borderColor: "gray",
     paddingHorizontal: perfectSize(10),
-    borderRadius: 10,
+    borderRadius: 5,
     alignItems: "center",
     marginVertical: perfectSize(10),
     height: perfectSize(45),
@@ -222,11 +246,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: perfectSize(10),
   },
   button: {
-    backgroundColor: "#ff751c",
+    backgroundColor: "#000080",
     height: perfectSize(45),
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 10,
+    borderRadius: 5,
     marginTop: perfectSize(20),
   },
 });

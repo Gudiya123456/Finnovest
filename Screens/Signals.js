@@ -100,7 +100,6 @@ export const Signals = ({ navigation }) => {
           colors={["#ff751a", "#ffff00"]}
           style={{ flex: 1 }}
         >
-          {/* <StatusBar hidden={false} backgroundColor='#ff751a' /> */}
           {/* <View style={{ height: 150 }}> */}
           <SafeAreaView style={{ backgroundColor: "#ff751a" }}>
             <SignalsHeader navigation={navigation} />

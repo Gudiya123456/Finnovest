@@ -64,11 +64,12 @@ const Verification = ({ navigation, route }) => {
           otp: otp,
         }
       );
-      if (!response.data.status) {
+      console.log(response.data.status);
+      if (response.data.status == "error") {
         setIsLoading(false);
         setErros({ ...errors, otp: response.data.message });
       }
-      if (response.data.status) {
+      if (response.data.status == "success") {
         AsyncStorage.setItem("token", response.data.token);
         AsyncStorage.setItem("userName", response.data.name);
         setIsLoading(false);

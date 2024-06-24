@@ -9,7 +9,7 @@ const HeaderSkeliton = () => {
       style={{
         flexDirection: "row",
         justifyContent: "center",
-        marginTop: Default.fixPadding * 1,
+        // marginTop: Default.fixPadding *,
         // marginBottom: Default.fixPadding,
         marginHorizontal: perfectSize(15),
       }}

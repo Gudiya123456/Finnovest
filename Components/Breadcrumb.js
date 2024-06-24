@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     marginTop: Default.fixPadding * 2,
     marginBottom: Default.fixPadding * 2,
     paddingHorizontal: perfectSize(15),
-    backgroundColor: "orange",
+    backgroundColor: "navy",
     marginHorizontal: perfectSize(15),
     paddingVertical: perfectSize(40),
     borderRadius: 20,

@@ -9,8 +9,8 @@ export default function AboutUs({ navigation }) {
     <>
       <SafeAreaView
         style={{
-          backgroundColor: "orange",
-          paddingBottom: 80,
+          backgroundColor: "navy",
+          height: 160,
           borderBottomRightRadius: perfectSize(20),
           // borderBottomLeftRadius: 20,
         }}
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   content: {
     fontSize: 14,
     textAlign: "justify",
-    lineHeight: perfectSize(22),
+    lineHeight: 23,
   },
   subTitle: {
     fontWeight: "600",

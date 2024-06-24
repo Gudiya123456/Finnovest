@@ -9,9 +9,12 @@ import {
 } from "react-native";
 import React from "react";
 import { Default, perfectSize } from "../constants/theme";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import {
+  Ionicons,
+  MaterialCommunityIcons,
+  FontAwesome5,
+} from "react-native-vector-icons";
 import { FONTS, COLORS, SIZES, icons } from "../constants";
-import { LinearGradient } from "expo-linear-gradient";
 
 export default function SignalsHeader({ navigation }) {
   return (
@@ -20,13 +23,18 @@ export default function SignalsHeader({ navigation }) {
         flexDirection: "row",
         paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : "",
         paddingHorizontal: perfectSize(15),
-        paddingVertical: perfectSize(10),
-        backgroundColor: "orange",
+        // paddingVertical: perfectSize(15),
+        backgroundColor: "navy",
+        alignItems: "center",
+        paddingBottom: 18,
+        // marginTop: perfectSize(3),
       }}
     >
       <View style={{ flex: 1 }}>
         <TouchableOpacity onPress={() => navigation.openDrawer()}>
-          <Ionicons name="menu-outline" size={30} color="#fff" />
+          {/* <Ionicons name="menu-outline" size={30} color="#fff" />
+           */}
+          <FontAwesome5 name="bars" size={22} color="#fff" />
         </TouchableOpacity>
       </View>
       <View style={{ flex: 1, alignItems: "center" }}>
@@ -34,7 +42,35 @@ export default function SignalsHeader({ navigation }) {
       </View>
       <View style={{ flex: 1, alignItems: "flex-end" }}>
         <TouchableOpacity onPress={() => navigation.push("notifications")}>
-          <Ionicons name="notifications-outline" size={28} color="#fff" />
+          <MaterialCommunityIcons name="bell-badge" size={24} color="#fff" />
+          <View
+            style={{
+              position: "absolute",
+              right: -2,
+              backgroundColor: "navy",
+              borderRadius: 10,
+              minWidth: 15,
+              top: -2,
+              padding: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <View
+              style={{
+                backgroundColor: "white",
+                borderRadius: 10,
+                minWidth: 14,
+                justifyContent: "center",
+                alignItems: "center",
+                padding: 0.3,
+              }}
+            >
+              <Text style={{ fontSize: 12, color: "orange", lineHeight: 13 }}>
+                1
+              </Text>
+            </View>
+          </View>
         </TouchableOpacity>
       </View>
     </View>
@@ -43,8 +79,10 @@ export default function SignalsHeader({ navigation }) {
 
 const styles = StyleSheet.create({
   headerTitle: {
-    ...FONTS.h1,
+    lineHeight: 35,
     color: COLORS.white,
+    fontSize: 24,
+    fontFamily: "bold",
   },
   subHeaderTitle: {
     ...FONTS.body3,

@@ -6,7 +6,7 @@ import { Default, perfectSize } from "../constants/theme";
 export const HomeBreadcrumb = (props) => {
   return (
     <View style={styles.header}>
-      <Text style={styles.headerTitle}>{props.title}..</Text>
+      <Text style={styles.headerTitle}>{props.title}...</Text>
       <Text style={styles.subHeaderTitle}>{props.subTitle}</Text>
     </View>
   );
@@ -16,12 +16,12 @@ const styles = StyleSheet.create({
   header: {
     justifyContent: "center",
     marginTop: -40,
-    marginBottom: Default.fixPadding * 2,
+    // marginBottom: Default.fixPadding * 2,
     paddingHorizontal: perfectSize(15),
     backgroundColor: "white",
-
-    marginHorizontal: 5,
-    paddingVertical: perfectSize(40),
+    // zIndex: 6,
+    // marginHorizontal: 1,
+    paddingVertical: perfectSize(30),
     // borderRadius: 20,
     borderTopRightRadius: 30,
     elevation: 5,

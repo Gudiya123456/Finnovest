@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, SafeAreaView } from "react-native";
 import React from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import Livesignals from "./Livesignals";
@@ -8,30 +8,38 @@ import ExitedSIgnals from "./ExitedSIgnals";
 const Tab = createMaterialTopTabNavigator();
 const Toptabnavigation = ({ navigation }) => {
   return (
-    <>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "orange" }}>
       <SignalsHeader navigation={navigation} />
       <Tab.Navigator
         tabBarPosition="top"
         screenOptions={{
-          tabBarActiveTintColor: "white",
+          tabBarPressOpacity: 1,
+          tabBarPressColor: "transparent",
+          tabBarActiveTintColor: "yellow",
+          tabBarInactiveTintColor: "white",
+          unmountOnBlur: true,
           tabBarLabelStyle: {
             fontSize: 14,
             fontWeight: "600",
-            letterSpacing: 0.2,
-            textAlign: "left",
+            // letterSpacing: 0.2,
+            // textAlign: "center",
           },
           // animationEnabled: false,
           tabBarStyle: {
-            backgroundColor: "orange",
+            backgroundColor: "navy",
           },
-          tabBarIndicatorStyle: { backgroundColor: "white" },
+          tabBarItemStyle: {
+            alignItems: "center",
+            padding: 0,
+          },
+          tabBarIndicatorStyle: { backgroundColor: "yellow" },
         }}
       >
-        <Tab.Screen name="Livesignals" component={Livesignals} />
-        <Tab.Screen name="ExitedSIgnals" component={ExitedSIgnals} />
-        <Tab.Screen name="Pastsignals" component={Pastsignals} />
+        <Tab.Screen name="Live signals" component={Livesignals} />
+        <Tab.Screen name="Exited SIgnals" component={ExitedSIgnals} />
+        <Tab.Screen name="Past signals" component={Pastsignals} />
       </Tab.Navigator>
-    </>
+    </SafeAreaView>
   );
 };
 

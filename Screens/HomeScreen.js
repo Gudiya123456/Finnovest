@@ -3,34 +3,31 @@ import {
   Text,
   View,
   ScrollView,
-  ActivityIndicator,
   RefreshControl,
   BackHandler,
 } from "react-native";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
-import * as Animatable from "react-native-animatable";
 import { FONTS, COLORS } from "../constants";
 import axios from "axios";
-import TabScreenHeader from "../Components/TabScreenHeader";
 import SearchInput from "../Components/SearchInput";
-import { Breadcrumb } from "../Components/Breadcrumb";
-import { CallsCard } from "../Components/CallsCard";
 import NoCallsCard from "../Components/NoCallsCard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
-import SignalDetails from "../Components/SignalDetails";
-import AutoHeightWebView from "react-native-autoheight-webview";
-import { Dimensions } from "react-native";
-import HeaderSkeliton from "../Components/skelitons/HeaderSkeliton";
 import HomeHeaderSkeliton from "../Components/skelitons/HomeHeaderSkeliton";
 import CallsCardSkeliton from "../Components/skelitons/CallsCardSkeliton";
 import { perfectSize } from "../constants/theme";
 import HomeHeader from "../Components/HomeHeader";
 import { HomeBreadcrumb } from "../Components/HomeBreadcrumb";
+import EmptyCallsSkeliton from "../Components/skelitons/EmptyCallsSkeliton";
+import CallsCard from "../Components/CallsCard";
+import { HomeCallsCard } from "../Components/HomeCallsCard";
+import { useDispatch } from "react-redux";
+import { setRefresh } from "../utils/reducers/Refreshreducer";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -75,6 +72,29 @@ export const HomeScreen = ({ navigation }) => {
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
+  const [userName, setUserName] = useState();
+  const [reload, setReload] = useState(1);
+  const [calls, setCalls] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [exitApp, setExitApp] = useState(0);
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    fetchHomeData();
+  }, [reload]);
+
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener("focus", () => {
+  //     fetchHomeData();
+  //   });
+
+  //   return unsubscribe;
+  // }, [navigation]);
+
+  useEffect(() => {
+    dispatch(setRefresh(reload));
+  }, [reload]);
   useEffect(() => {
     registerForPushNotificationsAsync().then((token) => {
       AsyncStorage.setItem("expoToken", token);
@@ -83,9 +103,10 @@ export const HomeScreen = ({ navigation }) => {
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
         setNotification(notification);
-        if (notification.request.content.data.action == "new-call")
-          setReload(new Date().getTime());
+
+        if (notification.request.content) setReload(new Date().getTime());
       });
+
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {});
     return () => {
@@ -99,12 +120,7 @@ export const HomeScreen = ({ navigation }) => {
   AsyncStorage.getItem("userName").then((userName) => {
     setUserName("Hey " + userName);
   });
-  const [userName, setUserName] = useState();
-  const [reload, setReload] = useState(1);
-  const [calls, setCalls] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [exitApp, setExitApp] = useState(0);
+
   const backAction = () => {
     setTimeout(() => {
       setExitApp(0);
@@ -117,39 +133,39 @@ export const HomeScreen = ({ navigation }) => {
     return true;
   };
 
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-    return () =>
-      BackHandler.removeEventListener(
+  useFocusEffect(
+    useCallback(() => {
+      const backHandler = BackHandler.addEventListener(
         "hardwareBackPress",
-        backHandler.remove()
+        backAction
       );
-  });
-
-  useEffect(() => {
-    fetchHomeData();
-  }, [reload]);
+      return () =>
+        BackHandler.removeEventListener(
+          "hardwareBackPress",
+          backHandler.remove()
+        );
+    })
+  );
 
   const fetchHomeData = async () => {
     setRefreshing(true);
     try {
       const token = await AsyncStorage.getItem("token");
-      const response = await axios.get(
-        "https://app-console.finocrm.in/api/v2/get-home-data",
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      );
-      if (response.data.status) setCalls(response.data.liveSignals);
+      const response = await axios.get("https://finocrm.in/api/get-home-data", {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      });
+      if (response.data.status === "success") {
+        setCalls(response.data.liveCalls);
+      }
     } catch (error) {
-      if (error.response.status === 401) navigation.push("login");
+      console.log(`home ${error}`);
+      if (error.response && error.response.status === 401)
+        navigation.push("login");
     } finally {
       setIsLoading(false);
+
       setRefreshing(false);
     }
   };
@@ -158,7 +174,7 @@ export const HomeScreen = ({ navigation }) => {
     try {
       const token = await AsyncStorage.getItem("token");
       const response = await axios.post(
-        "https://app-console.finocrm.in/api/v2/set-token",
+        "https://finocrm.in/api/set-token",
         { token: aa },
         {
           headers: {
@@ -168,7 +184,7 @@ export const HomeScreen = ({ navigation }) => {
       );
     } catch (error) {}
   };
-
+  // console.log(calls);
   return (
     <>
       {isLoading ? (
@@ -183,13 +199,24 @@ export const HomeScreen = ({ navigation }) => {
         <View style={{ flex: 1, backgroundColor: "white" }}>
           <SafeAreaView
             style={{
-              backgroundColor: "orange",
+              backgroundColor: "navy",
               paddingBottom: 60,
               borderBottomRightRadius: perfectSize(20),
               // borderBottomLeftRadius: 20,
             }}
           >
             <HomeHeader navigation={navigation} />
+            {/* <View
+              style={{
+                height: perfectSize(50),
+                alignItems: "center",
+              }}
+            >
+              <Image
+                source={require("../assets/logo.png")}
+                style={styles.image}
+              />
+            </View> */}
             <SearchInput />
           </SafeAreaView>
           <View style={styles.footer}>
@@ -213,13 +240,27 @@ export const HomeScreen = ({ navigation }) => {
             >
               <Text style={styles.recommendations}>Recommendations</Text>
               {refreshing ? (
-                <CallsCardSkeliton />
-              ) : calls.length == 0 ? (
-                <NoCallsCard />
+                !calls || calls.length === 0 ? (
+                  <View style={{ marginTop: 10 }}>
+                    <EmptyCallsSkeliton />
+                  </View>
+                ) : (
+                  <View style={{ marginTop: 15 }}>
+                    {calls.map((call) => {
+                      return <CallsCardSkeliton key={call.id} />;
+                    })}
+                  </View>
+                )
+              ) : !calls || calls.length === 0 ? (
+                <View style={{ marginTop: 10 }}>
+                  <NoCallsCard />
+                </View>
               ) : (
-                calls.map((call) => {
-                  return <CallsCard key={call.id} data={call} />;
-                })
+                <View style={{ marginBottom: 15 }}>
+                  {calls.map((call) => {
+                    return <CallsCard key={call.id} data={call} />;
+                  })}
+                </View>
               )}
             </ScrollView>
           </View>
@@ -234,10 +275,9 @@ const styles = StyleSheet.create({
   footer: {
     flex: 4,
     backgroundColor: COLORS.white,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+
     paddingHorizontal: perfectSize(15),
-    paddingVertical: perfectSize(10),
+    paddingTop: perfectSize(10),
     // minHeight: "100",
   },
 
@@ -272,14 +312,20 @@ const styles = StyleSheet.create({
   recommendations: {
     fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 15,
+    // marginBottom: perfectSize(5),
     color: "#4682b4",
     // fontStyle: "italic",
     // letterSpacing: 0.8,
+    marginTop: perfectSize(15),
   },
   contentLoader: {
     height: 400,
     alignItems: "center",
     justifyContent: "center",
+  },
+  image: {
+    width: perfectSize(400),
+    height: perfectSize(50),
+    contentFit: "contain",
   },
 });

@@ -8,10 +8,9 @@ import {
   ActivityIndicator,
 } from "react-native";
 import React from "react";
-import DrawerScreenHeader from "../Components/DrawerScreenHeader";
+import DrawerScreenHeader from "./DrawerScreenHeader";
 import { perfectSize } from "../constants/theme";
-
-export const Portfolio = ({ navigation }) => {
+const Performance = ({ navigation }) => {
   return (
     <>
       <SafeAreaView
@@ -27,12 +26,14 @@ export const Portfolio = ({ navigation }) => {
 
       <View style={{ flex: 1, backgroundColor: "#fff" }}>
         <View style={styles.header}>
-          <Text style={styles.title}>Portfolio coming soon</Text>
+          <Text style={styles.title}>Performance coming soon</Text>
         </View>
       </View>
     </>
   );
 };
+
+export default Performance;
 const styles = StyleSheet.create({
   title: {
     fontWeight: "bold",

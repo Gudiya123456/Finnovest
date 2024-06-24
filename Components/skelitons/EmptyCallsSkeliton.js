@@ -10,13 +10,11 @@ import React, { useEffect, useState } from "react";
 import Skeliton from "./Skeliton";
 import { perfectSize } from "../../constants/theme";
 export const cardWidth = Dimensions.get("window").width * 0.92;
-export default function CompanyCard({ navigation, company }) {
+export default function EmptyCallsSkeliton({ navigation, company }) {
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{
-        alignItems: "center",
-      }}
+      contentContainerStyle={{ alignItems: "center" }}
     >
       {/* <View
         style={{
@@ -29,11 +27,10 @@ export default function CompanyCard({ navigation, company }) {
       /> */}
       <View
         style={{
-          // marginTop: perfectSize(10),
-          marginBottom: perfectSize(15),
+          marginBottom: perfectSize(10),
         }}
       >
-        <Skeliton height={245} width={cardWidth} style={{ borderRadius: 15 }} />
+        <Skeliton height={100} width={cardWidth} style={{ borderRadius: 15 }} />
       </View>
     </ScrollView>
   );

@@ -4,7 +4,7 @@ import Button from "./Button";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { useNavigation } from "@react-navigation/native";
-import { perfectSize } from "./kyc/IndentityDetails";
+import { perfectSize } from "../constants/theme";
 
 export default function LogoutBtn() {
   const navigation = useNavigation();
@@ -23,15 +23,16 @@ export default function LogoutBtn() {
   };
 
   return (
-    <View style={{ padding: 35 }}>
+    <View style={{ paddingVertical: 20, paddingHorizontal: 10 }}>
       <TouchableOpacity
         style={{
           backgroundColor: "#ff751a",
           justifyContent: "center",
           alignItems: "center",
-          paddingVertical: perfectSize(15),
-          borderRadius: 10,
+          paddingVertical: 15,
+          borderRadius: 5,
         }}
+        onPress={logoutHandle}
       >
         {/* <Button title="Logout" onPress={logoutHandle} isLoading={isLoading} /> */}
         <Text style={{ fontSize: 15, letterSpacing: 0.8, color: "white" }}>

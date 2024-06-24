@@ -16,9 +16,9 @@ export default function SearchInput() {
       <TextInput
         style={styles.inputStyle}
         autoCorrect={false}
-        placeholder="Password"
-        value={"Search for stocks"}
-        onChangeText={this.onPasswordEntry}
+        placeholder="Search for stocks"
+        // value={"Search for stocks"}
+        // onChangeText={this.onPasswordEntry}
       />
     </View>
   );
@@ -32,12 +32,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: Default.fixPadding * 3,
     borderRadius: 5,
-    marginHorizontal: perfectSize(18),
+    marginHorizontal: perfectSize(15),
     // borderWidth: 0.5,
   },
   inputStyle: {
     flex: 1,
     color: "#8c8c8c",
+    paddingRight: 10,
   },
 
   searchIcon: {

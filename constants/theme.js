@@ -1,7 +1,7 @@
 import { Dimensions } from "react-native";
 import { create } from "react-native-pixel-perfect";
 
-const { width, height } = Dimensions.get("window");
+export const { width, height } = Dimensions.get("window");
 
 export const perfectSize = create(PerfectFixSize);
 

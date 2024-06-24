@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,9 +8,7 @@ import {
   BackHandler,
   TouchableOpacity,
 } from "react-native";
-import { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import NoCallsCard from "../Components/NoCallsCard";
@@ -18,64 +16,77 @@ import CallsCardSkeliton from "../Components/skelitons/CallsCardSkeliton";
 import { perfectSize } from "../constants/theme";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import CallsCard from "../Components/CallsCard";
+import EmptyCallsSkeliton from "../Components/skelitons/EmptyCallsSkeliton";
+import { useFocusEffect } from "@react-navigation/native";
 
-const Pastsignals = () => {
+const Pastsignals = ({ navigation }) => {
   const [calls, setCalls] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
-  const [signals, setSignals] = useState([]);
+  const [filteredCalls, setFilteredCalls] = useState([]);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isTodatepickerVisible, setTodatePickerVisible] = useState(false);
+  const [isFetched, setIsFetched] = useState(false);
   const [exitApp, setExitApp] = useState(0);
-  const backAction = () => {
-    setTimeout(() => {
-      setExitApp(0);
-    }, 2000);
-    if (exitApp === 0) {
-      setExitApp(exitApp + 1);
-    } else if (exitApp === 1) {
-      BackHandler.exitApp();
+  useEffect(() => {
+    if (!isFetched) {
+      fetchPastSignals();
     }
-    return true;
-  };
-
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-    return () =>
-      BackHandler.removeEventListener(
-        "hardwareBackPress",
-        backHandler.remove()
-      );
-  });
-
-  useEffect(() => {
-    fetchPastSignals();
   }, []);
+
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener("focus", () => {
+  //     fetchPastSignals();
+  //   });
+
+  //   return unsubscribe;
+  // }, [navigation]);
 
   const fetchPastSignals = async () => {
     setRefreshing(true);
     try {
       const token = await AsyncStorage.getItem("token");
       const response = await axios.get(
-        "https://app-console.finocrm.in/api/v2/get-signals",
+        "https://finocrm.in/api/get-signal-data",
         {
           headers: {
             Authorization: "Bearer " + token,
           },
         }
       );
-      if (response.data.status) setCalls(response.data.liveSignals);
+      if (response.data.status == "success") {
+        setCalls(response.data.pastCalls);
+        setFilteredCalls(response.data.pastCalls);
+      }
     } catch (error) {
-      if (error.response.status === 401) navigation.push("login");
+      console.log(`past ${error}`);
+      if (error.response && error.response.status === 401) {
+        navigation.push("login");
+      }
     } finally {
       setIsLoading(false);
       setRefreshing(false);
     }
+  };
+
+  const trackCalls = () => {
+    const filteredCalls = calls.filter((call) => {
+      const callDate = new Date(call.created_at);
+      if (fromDate && toDate) {
+        return (
+          callDate >= fromDate &&
+          callDate <= new Date(toDate.getTime() + 86400000)
+        );
+      } else if (fromDate) {
+        return callDate >= fromDate;
+      } else if (toDate) {
+        return callDate <= toDate;
+      }
+      return true;
+    });
+    setFilteredCalls(filteredCalls);
   };
 
   return (
@@ -87,8 +98,7 @@ const Pastsignals = () => {
           borderRadius: 10,
           flexDirection: "row",
           alignItems: "center",
-          marginVertical: perfectSize(5),
-          marginBottom: perfectSize(10),
+          marginTop: perfectSize(5),
         }}
       >
         <TouchableOpacity
@@ -110,7 +120,7 @@ const Pastsignals = () => {
               paddingLeft: 5,
             }}
           >
-            {fromDate ? fromDate.toLocaleDateString() : "From date"}
+            {fromDate ? fromDate.toISOString().split("T")[0] : "From date"}
           </Text>
         </TouchableOpacity>
 
@@ -133,7 +143,7 @@ const Pastsignals = () => {
               paddingLeft: 5,
             }}
           >
-            {toDate ? toDate.toLocaleDateString() : "To date"}
+            {toDate ? toDate.toISOString().split("T")[0] : "To date"}
           </Text>
         </TouchableOpacity>
 
@@ -141,12 +151,13 @@ const Pastsignals = () => {
           style={{
             flex: 3,
             backgroundColor: "black",
-            height: 30,
+            height: 35,
             margin: 5,
             borderRadius: 10,
             alignItems: "center",
             justifyContent: "center",
           }}
+          onPress={trackCalls}
         >
           <Text
             style={{
@@ -168,15 +179,27 @@ const Pastsignals = () => {
         }
       >
         {refreshing ? (
-          calls.map((call) => {
-            return <CallsCardSkeliton key={call.id} />;
-          })
-        ) : calls.length == 0 ? (
-          <NoCallsCard />
+          filteredCalls.length === 0 ? (
+            <View style={{ marginTop: perfectSize(15) }}>
+              <EmptyCallsSkeliton />
+            </View>
+          ) : (
+            <View style={{ marginTop: perfectSize(15) }}>
+              {filteredCalls.map((call) => {
+                return <CallsCardSkeliton key={call.id} data={call} />;
+              })}
+            </View>
+          )
+        ) : filteredCalls.length === 0 ? (
+          <View style={{ marginTop: perfectSize(15) }}>
+            <NoCallsCard />
+          </View>
         ) : (
-          calls.map((call) => {
-            return <CallsCard key={call.id} data={call} />;
-          })
+          <View style={{ marginBottom: perfectSize(15) }}>
+            {filteredCalls.map((call) => {
+              return <CallsCard key={call.id} data={call} />;
+            })}
+          </View>
         )}
       </ScrollView>
 
@@ -203,10 +226,12 @@ const Pastsignals = () => {
 };
 
 export default Pastsignals;
+
 const styles = StyleSheet.create({
   container: {
-    paddingTop: perfectSize(10),
+    paddingTop: 10,
     flex: 1,
     paddingHorizontal: perfectSize(15),
+    backgroundColor: "white",
   },
 });

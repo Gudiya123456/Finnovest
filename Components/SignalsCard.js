@@ -15,57 +15,25 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import { perfectSize } from "../constants/theme";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function CallsCard({ data }) {
+export default function SignalsCard({ activeTab, data }) {
   const [show, setShow] = useState(0);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [readRemarks, setReadRemarks] = useState(new Set());
-
-  useEffect(() => {
-    // Load read remarks from AsyncStorage on component mount
-    const loadReadRemarks = async () => {
-      try {
-        const storedReadRemarks = await AsyncStorage.getItem("readRemarks");
-        if (storedReadRemarks !== null) {
-          setReadRemarks(new Set(JSON.parse(storedReadRemarks)));
-        }
-      } catch (error) {
-        console.error("Error loading read remarks:", error);
-      }
-    };
-
-    loadReadRemarks();
-  }, []);
-
-  useEffect(() => {
-    // Calculate new unread remarks count
-    const unreadRemarksCount = data.remarks.filter(
-      (remark) => !readRemarks.has(remark.id)
-    ).length;
-    setUnreadCount(unreadRemarksCount);
-  }, [data.remarks, readRemarks]);
-
-  const handleArrowPress = () => {
-    setShow(!show);
-    // Mark all remarks as read when opening
-    const updatedReadRemarks = new Set([...readRemarks]);
-    data.remarks.forEach((remark) => updatedReadRemarks.add(remark.id));
-    setReadRemarks(updatedReadRemarks);
-    setUnreadCount(0); // Reset unread count
-    saveReadRemarks(updatedReadRemarks);
-  };
-
-  const saveReadRemarks = async (remarks) => {
-    try {
-      await AsyncStorage.setItem("readRemarks", JSON.stringify([...remarks]));
-    } catch (error) {
-      console.error("Error saving read remarks:", error);
-    }
-  };
-
+  console.log(data);
   return (
-    <View style={styles.container} key={data.id}>
+    <View style={styles.container}>
+      {/* <LinearGradient
+        colors={["#000fFF", "#00F4FF"]}
+        locations={[0.2, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={{ borderRadius: 20 }}
+      > */}
+      {/* <LinearGradient
+        start={{ x: 0, y: 0.4 }}
+        end={{ x: 1, y: 0.6 }}
+        colors={["#ff751a", "#ffff00"]}
+        style={{ borderRadius: 20 }}
+      > */}
       <View
         style={{
           backgroundColor: "#fff",
@@ -102,10 +70,10 @@ export default function CallsCard({ data }) {
                 style={{
                   color: "gray",
                   fontSize: 16,
-                  fontWeight: "600",
                 }}
               >
-                {data.script_name}
+                {/* {signal.script} */}
+                Buy Dixon Nov 5350 CE
               </Text>
               <Text
                 style={{
@@ -115,49 +83,23 @@ export default function CallsCard({ data }) {
               >
                 {/* {signal.created_at}
                  */}
-                {data.time}
+                21 Nov 2023 09:30 pm
               </Text>
             </View>
             <TouchableOpacity
               style={{ paddingRight: 8, paddingLeft: 5, paddingTop: 5 }}
-              onPress={handleArrowPress}
+              onPress={() => {
+                setShow(!show);
+              }}
             >
-              {data.remarks.length <= 0 ? (
+              {activeTab === "live" ? (
                 ""
               ) : (
-                <View>
-                  <MaterialIcons
-                    name={show ? "keyboard-arrow-up" : "keyboard-arrow-down"}
-                    size={25}
-                    color="#000"
-                  />
-
-                  <View
-                    style={{
-                      display: unreadCount > 0 ? "flex" : "none",
-                      position: "absolute",
-                      right: 0,
-                      top: -4,
-                      backgroundColor: "red",
-                      borderRadius: 7,
-                      height: 14,
-                      minWidth: 14,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 11,
-                        color: "white",
-                        lineHeight: 13,
-                        margin: 1,
-                      }}
-                    >
-                      {unreadCount}
-                    </Text>
-                  </View>
-                </View>
+                <MaterialIcons
+                  name={show ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+                  size={25}
+                  color="#000"
+                />
               )}
             </TouchableOpacity>
           </View>
@@ -177,7 +119,8 @@ export default function CallsCard({ data }) {
                   color: "gray",
                 }}
               >
-                {data.price_range}
+                {/* ₹{signal.price_range} */}
+                ₹40.00 - 42.50
               </Text>
             </View>
             <View style={{ flex: 1 }}>
@@ -195,10 +138,7 @@ export default function CallsCard({ data }) {
           <View style={{ flexDirection: "" }}>
             <View
               style={{
-                backgroundColor:
-                  (data.action == "Buy" && "green") ||
-                  (data.action == "Sell" && "red") ||
-                  (data.action == "Hold" && "orange"),
+                backgroundColor: "green",
                 paddingHorizontal: 2,
                 alignItems: "center",
                 paddingVertical: 2,
@@ -212,7 +152,7 @@ export default function CallsCard({ data }) {
                   color: "white",
                 }}
               >
-                {data.action}
+                Buy
               </Text>
             </View>
             <View>
@@ -221,10 +161,9 @@ export default function CallsCard({ data }) {
                   fontSize: 12,
                   color: "gray",
                   fontStyle: "italic",
-                  textAlign: "right",
                 }}
               >
-                (Action){" "}
+                (Action)
               </Text>
             </View>
           </View>
@@ -247,7 +186,7 @@ export default function CallsCard({ data }) {
             >
               Stoploss
             </Text>
-            <Text style={{ color: "gray" }}>Rs. {data.stop_loss}</Text>
+            <Text style={{ color: "gray" }}>Rs. 30.50</Text>
           </View>
 
           <View
@@ -267,7 +206,7 @@ export default function CallsCard({ data }) {
             >
               Target 1
             </Text>
-            <Text style={{ color: "gray" }}>Rs. {data.target1}</Text>
+            <Text style={{ color: "gray" }}>Rs. 60.60</Text>
           </View>
 
           <View
@@ -287,7 +226,7 @@ export default function CallsCard({ data }) {
             >
               Target 2
             </Text>
-            <Text style={{ color: "gray" }}>Rs. {data.target2}</Text>
+            <Text style={{ color: "gray" }}>Rs. 70.00</Text>
           </View>
 
           <View
@@ -305,57 +244,79 @@ export default function CallsCard({ data }) {
             >
               Duration
             </Text>
-            <Text style={{ color: "gray" }}>{data.duration}</Text>
+            <Text style={{ color: "gray" }}>interady/Holding</Text>
           </View>
         </View>
       </View>
-      {/* {data.remarks.length && ( */}
-      {data.remarks.length > 0 && (
+
+      <View
+        style={{
+          backgroundColor: "white",
+          // elevation: 5,
+          // shadowColor: "black",
+          // shadowOpacity: 0.5,
+          // shadowOffset: { width: 1, height: 1 },
+          borderColor: "orange",
+          borderWidth: 1,
+          marginLeft: 15,
+          padding: 5,
+          paddingLeft: 15,
+          paddingRight: 15,
+          marginRight: 15,
+          marginTop: -5,
+          // marginBottom: perfectSize(5),
+          borderBottomStartRadius: 10,
+          borderBottomEndRadius: 10,
+          display: activeTab === "live" ? "flex" : show ? "flex" : "none",
+        }}
+      >
         <View
           style={{
-            backgroundColor: "white",
-            // elevation: 5,
-            // shadowColor: "black",
-            // shadowOpacity: 0.5,
-            // shadowOffset: { width: 1, height: 1 },
-            borderColor: "orange",
-            borderWidth: 1,
-            marginLeft: 15,
-            padding: 5,
-            paddingLeft: 15,
-            paddingRight: 15,
-            marginRight: 15,
-            marginTop: -5,
-            // marginBottom: perfectSize(5),
-            borderBottomStartRadius: 10,
-            borderBottomEndRadius: 10,
-            display: show ? "flex" : "none",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            borderBottomWidth: 1,
+            borderColor: "#ddd",
+
+            paddingVertical: 5,
           }}
         >
-          {data.remarks.map((calls, index) => (
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                borderBottomWidth: 1,
-                borderColor: index + 1 == data.remarks.length ? "#fff" : "#ddd",
-                paddingVertical: 5,
-              }}
-              key={calls.id}
-            >
-              <Text style={{ color: "#000" }}>{calls.title}</Text>
-              <Text style={{ color: "#000" }}>{calls.created_at}</Text>
-            </View>
-          ))}
+          <Text style={{ color: "#000" }}>one</Text>
+          <Text style={{ color: "#000" }}>10:30</Text>
         </View>
-      )}
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            borderBottomWidth: 1,
+            borderColor: "#ddd",
+
+            paddingVertical: 5,
+          }}
+        >
+          <Text style={{ color: "#000" }}>Two</Text>
+          <Text style={{ color: "#000" }}>10:30</Text>
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            borderColor: "#ddd",
+
+            paddingVertical: 5,
+          }}
+        >
+          <Text style={{ color: "#000" }}>Three</Text>
+          <Text style={{ color: "#000" }}>10:30</Text>
+        </View>
+      </View>
+      {/* </LinearGradient> */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 15,
+    marginTop: perfectSize(10),
     // borderWidth: 6
     // alignItems: 'center',
     // justifyContent: 'center',

@@ -56,17 +56,17 @@ export default function LoginScreen({ navigation }) {
     }, 10000);
   }, []);
 
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-    return () =>
-      BackHandler.removeEventListener(
-        "hardwareBackPress",
-        backHandler.remove()
-      );
-  });
+  // useEffect(() => {
+  //   const backHandler = BackHandler.addEventListener(
+  //     "hardwareBackPress",
+  //     backAction
+  //   );
+  //   return () =>
+  //     BackHandler.removeEventListener(
+  //       "hardwareBackPress",
+  //       backHandler.remove()
+  //     );
+  // });
 
   const checkLogedIn = async () => {
     try {

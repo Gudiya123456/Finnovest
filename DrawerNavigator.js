@@ -1,11 +1,7 @@
 import React from "react";
 import {
   View,
-  Text,
-  StyleSheet,
   SafeAreaView,
-  Image,
-  TouchableOpacity,
   ScrollView,
   Platform,
   StatusBar,
@@ -14,22 +10,13 @@ import {
   DrawerItemList,
   createDrawerNavigator,
 } from "@react-navigation/drawer";
-import { NavigationContainer } from "@react-navigation/native";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import StackNavigator from "./StackNavigator";
-import { Default } from "./constants/theme";
 import MyAccount from "./Screens/Drawer/MyAccount";
 import AboutUs from "./Screens/Drawer/AboutUs";
 import ContactUs from "./Screens/Drawer/ContactUs";
-import Faqs from "./Screens/Drawer/Faqs";
-import { DrawerActions } from "@react-navigation/native";
 
-import DrawerCloseButton from "./Components/DrawerCloseButton";
-
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import LogoutBtn from "./Components/LogoutBtn";
-import DrawerHeader from "./Components/DrawerHeader";
-import { HomeScreen } from "./Screens/HomeScreen";
 import {
   Ionicons,
   Feather,
@@ -38,18 +25,18 @@ import {
   MaterialCommunityIcons,
   FontAwesome,
 } from "@expo/vector-icons";
-import StackNavigation from "./Components/kyc/StackNavigation";
 import TermsAndConditions from "./Screens/Drawer/TermsAndConditions";
 import CancellationAndRefundPolicy from "./Screens/Drawer/CancellationAndRefundPolicy";
 import PrivacyPolicy from "./Screens/Drawer/PrivacyPolicy";
 import RegulatoryCompliance from "./Screens/Drawer/RegulatoryCompliance";
 import InvestorCharter from "./Screens/Drawer/InvestorCharter";
 import ComplaintRedressal from "./Screens/Drawer/ComplaintRedressal";
+import Kyc from "./Screens/Kyc/Kyc";
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = ({ navigation }) => {
   return (
-    <NavigationContainer>
+    <>
       <Drawer.Navigator
         initialRouteName="Home"
         drawerContent={(props) => {
@@ -237,6 +224,7 @@ const DrawerNavigator = ({ navigation }) => {
         /> */}
         <Drawer.Screen
           name="Kyc"
+          component={Kyc}
           options={{
             drawerLabel: "Kyc",
             title: "Kyc",
@@ -244,10 +232,9 @@ const DrawerNavigator = ({ navigation }) => {
               <Feather name="user-check" size={22} color="black" />
             ),
           }}
-          component={StackNavigation}
         />
       </Drawer.Navigator>
-    </NavigationContainer>
+    </>
   );
 };
 

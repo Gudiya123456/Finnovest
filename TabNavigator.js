@@ -1,14 +1,14 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { HomeScreen } from "./Screens/HomeScreen";
-import { Signals } from "./Screens/Signals";
 import { Mutualfund } from "./Screens/Mutualfund";
 import { Portfolio } from "./Screens/Portfolio";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Toptabnavigation from "./Screens/Toptabnavigation";
+import Performance from "./Components/Performance";
 const Tab = createBottomTabNavigator();
 
 const screenOptions = {
@@ -70,14 +70,14 @@ export const TabNavigator = () => {
       />
       <Tab.Screen
         name="Performance"
-        component={Mutualfund}
+        component={Performance}
         options={{
           tabBarIcon: ({ focused }) => {
             return (
               <View style={{ alignItems: "center", justifyContent: "center" }}>
                 <MaterialIcons
                   name={"insert-chart"}
-                  size={20}
+                  size={24}
                   color={focused ? "#fff" : "grey"}
                 />
               </View>
